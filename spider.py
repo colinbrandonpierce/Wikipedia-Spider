@@ -1,5 +1,9 @@
 import bs4
 import requests
+import random
+
+def hasNumbers(inputString):
+    return any(char.isdigit() for char in inputString)
 
 def add_to_dic(obj, dic):
     if obj in dic:
@@ -7,37 +11,41 @@ def add_to_dic(obj, dic):
     else:
         dic[obj] = 0
         
-def recur(DIC, pages_visited, start_page):
+def recur(dic, pages, start_page):
     response = requests.get(start_page)
-    if response is not None:
-        html = bs4.BeautifulSoup(response.text, 'html.parser')
+    html = bs4.BeautifulSoup(response.text, 'html.parser')
+        
+    #title = html.select("#firstHeading")[0].text
+        
+    #add_to_dic(title, dic)
+    #print(dic)
             
-        paragraphs = html.select("p")
-        for para in paragraphs:
-            try:
-                for j in para.find("a"):
-                    add_to_dic(j,DIC)
-            except:
-                pass
-       # recur(DIC, pages_visited, start_page)
-    else:
-        return 0
+    paragraphs = html.select("p")
+    for para in paragraphs:
+        try:
+            for i in para.find("a"):
+                if not hasNumbers("{}".format(i)):
+                    pages.append(i)
+                    add_to_dic(i, dic)
+        except:
+            pass
+
+    j = pages[random.randint(0,len(pages))]
+    url = "https://en.wikipedia.org/wiki/{}".format(j.replace(" ", "_"))
+    try:
+        print("visiting page: {}".format(j))
+        recur(dic, pages, url)           
+    except:
+        j = pages[random.randint(0,len(pages))]
+        url = "https://en.wikipedia.org/wiki/{}".format(j.replace(" ", "_"))
+        print("visiting page: {}".format(j))
+        recur(dic, pages, url)
 
 
-DIC = {}
-pages_visited=[]
-recur(DIC, pages_visited, "https://en.wikipedia.org/wiki/Philosophy")
-print(DIC)
-
-
-
+DIC = {"Philosophy":1}
+pages = []
+recur(DIC, pages, "https://en.wikipedia.org/wiki/Philosophy")
 
 
 
 #while response is not None:
-    #title = html.select("#firstHeading")[0].text
-    #print(title)
-
-
- #   intro = '\n'.join([ para.text for para in paragraphs[0:5]])
-   # print (intro)
