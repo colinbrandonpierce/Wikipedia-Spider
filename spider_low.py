@@ -60,7 +60,8 @@ def iterr(pages, start_page, index):
                         pages.append(title) # track redirects instead of shown title
                         print("{}".format(title.replace("_", " ")))
                     
-                elif tries == maxx or maxx == 0: # if all pages have been visited or no links (say, just charts)
+                #elif tries == maxx or maxx == 0: # if all pages have been visited or no links (say, just charts)
+                else:
                     url = "https://en.wikipedia.org/wiki/Special:Random"
                     print("------------visiting random page------------")
                     index+=1
