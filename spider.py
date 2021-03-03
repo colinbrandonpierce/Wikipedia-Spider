@@ -1,89 +1,77 @@
 import bs4
 import requests
 import random
-import pickle
+#import os
 
+# try: # start from fresh file
+#     os.remove("master.txt")
+# except:
+#     pass
+    
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
 
-def add_to_dic(obj, links, dic, flag):
-    if flag == 0: # if a link
-        if obj in dic:
-            dic[obj[0]] = dic[obj[0]]+1#, dic[obj[1]]]
-        else:
-            dic[obj] = [0, 0]
-    else: # if main page
-        try:
-            dic[obj] = [dic[obj[0]], links]
-        except:
-            dic[obj] = [0, links]
-            #print("------------new entry------------") # never visited nor added to dictionary
-        
-        
-def recur(dic, pages, start_page, index):
-    index += 1
-    response = requests.get(start_page) # pull page
-    html = bs4.BeautifulSoup(response.text, 'html.parser') #parse page
+def recur(pages, start_page, index):
+    #TOTAL_PAGES = 6257751
+
+    r = requests.get(start_page) # pull page
+    html = bs4.BeautifulSoup(r.content, 'html.parser') #parse page
     title = html.select("#firstHeading")[0].text
-    pages.append(title.lower())
-    
     
     links = [] # links on page
     paragraphs = html.select("p")
     for para in paragraphs:
+        linx = para.findAll('a')
         try:
-            for i in para.find("a"):
-                if not hasNumbers("{}".format(i)):
-                    links.append(i)
-                    add_to_dic(i, links, dic, 0)
+            for i in linx:
+                if not hasNumbers("{}".format(i)) and i != "[update]":
+                    links.append(i.get('title').replace(" ", "_"))
+                    f = open("master.txt", "a")
+                    f.write("{} {}\n".format(title.replace(" ", "_"), i.get('title').replace(" ", "_")))
+                    f.close()
         except:
             pass
         
-    add_to_dic(title, links, dic, 1) 
-        
-    if  index % 100 == 0: # update master file
-        f = open("master.pkl", "wb") # NEEDS WORK
-        pickle.dump(dic,f)
-        f.close()
-        print("------------UPDATED------------")
-        print("------------index = {}------------".format(index))
-    
+    #if index != TOTAL_PAGES: # if visited everything (SHOULD BE A BIG SLOWDOWN MECHANIC INSTEAD)
     sentinel = 0
     while sentinel == 0:
         maxx = len(links)
         tries = 0
         
-        j = links[random.randint(0,len(links))] # pick random page to go to (cant do more than one at a time apparantly)
+        j = links[random.randint(0,len(links))] # pick random page to go to (cant do more than one at a time apparently)
         try:
             tries += 1
-            if j.lower() not in pages:
-                url = "https://en.wikipedia.org/wiki/{}".format(j.replace(" ", "_"))
+            if j not in pages:
+                url = "https://en.wikipedia.org/wiki/{}".format(j)
                 print("{}".format(j))
-                recur(dic, pages, url, index)    
-                sentinel = 1 # just in case you can heh
-            elif tries == maxx: # if all pages have been visited
+                pages.append(j) # track redirects instead of page titles
+                index+=1
+                recur( pages, url, index)    
+                sentinel = 1 # just in case you can
+            elif tries == maxx or maxx == 0: # if all pages have been visited or no links (say, just charts)
                 url = "https://en.wikipedia.org/wiki/Special:Random"
                 print("------------visiting random page------------")
-                recur(dic, pages, url, index)
-            #else:
-            #    print("page visited! = {}".format(j))
-
+                index+=1
+                recur( pages, url, index)
         except:
             pass
 
-
-DIC = {} # run LOAD PICKLE HERE
-pages = [] # pages visited
-index = 0;
-recur(DIC, pages, "https://en.wikipedia.org/wiki/Philosophy", index)
+pages = ["Philosophy"] # pages visited
+try:
+    fe = open("master.txt", "r")
+    for line in fe:
+        titlee = line.split()[0]
+        if titlee not in pages:
+            pages.append(titlee)
+    fe.close()
+except:
+    pass
+print(pages)
+index = 1;
+recur(pages, "https://en.wikipedia.org/wiki/Philosophy", index)
 
 
 
 #while response is not None:
-#title = html.select("#firstHeading")[0].text
- #add_to_dic(title, dic)
-    #print(dic)
-    
-    #    if  index == 100:
-#        print(dic)
-#        index = 0
+
+#program improvements: huge slowdown mechanic, database stuff?
