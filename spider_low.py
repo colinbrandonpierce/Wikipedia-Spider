@@ -40,8 +40,8 @@ def iterr(pages, start_page, index):
         write("master.txt", "{} {}\n".format(title,i))
 
     while index < MAX_PAGES:
-        if index % 1000 == 0:
-            print("------------index = {}------------".format(index))
+        # if index % 1000 == 0:
+        #     print("------------index = {}------------".format(index))
 
         maxx = len(links)
         tries = 0
@@ -86,8 +86,8 @@ try:
     fe.close()
 except:
     pass
-print("visited {} pages".format(len(pages)))
-index = 1;
+print("visited {} pages total".format(len(pages)))
+index = len(pages);
 iterr(pages, "https://en.wikipedia.org/wiki/Philosophy", index)
 
 
