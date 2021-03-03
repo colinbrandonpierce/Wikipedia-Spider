@@ -86,7 +86,7 @@ try:
     fe.close()
 except:
     pass
-#print(pages)
+print("visited {} pages".format(len(pages)))
 index = 1;
 iterr(pages, "https://en.wikipedia.org/wiki/Philosophy", index)
 
