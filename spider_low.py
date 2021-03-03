@@ -12,11 +12,12 @@ def visit(page):
     title = title.replace(" ", "_")
     paragraphs = html.select("p")
     links = []
+    nono1 = ":"; nono2 = "[update]"
     for para in paragraphs:
         linx = para.findAll('a')
         try:
             for i in linx:
-                if not hasNumbers("{}".format(i)) and i != "[update]":
+                if (not hasNumbers("{}".format(i))) and ((nono1 or nono2) not in i):
                     i = i.get('title').replace(" ", "_")
                     links.append(i)
         except:
@@ -49,28 +50,29 @@ def iterr(pages, start_page, index):
                 tries += 1
                 if maxx>1:
                     j = links[random.randint(0,maxx-1)] # pick random page to go to
-                    if j not in pages:
-                        url = "https://en.wikipedia.org/wiki/{}".format(j)
-                        index+=1
-                        
-                        html, title, links = visit(url)
-                        write("pages_visited.txt", "{}\n".format(title))
-                        for i in links:
-                            write("master.txt", "{} {}\n".format(title,i))
-                        pages.append(title) # track redirects instead of shown title
-                        print("{}".format(title.replace("_", " ")))
+                else:
+                    j = None
+                if j not in pages and j is not None:
+                    url = "https://en.wikipedia.org/wiki/{}".format(j)
+                    index+=1
+                    
+                    html, title, links = visit(url)
+                    write("pages_visited.txt", "{}\n".format(title))
+                    for i in links:
+                        write("master.txt", "{} {}\n".format(title,i))
+                    pages.append(title) # track redirects instead of shown title
+                    print("{}".format(title.replace("_", " ")))
                     
                 #elif tries == maxx or maxx == 0: # if all pages have been visited or no links (say, just charts)
                 else:
                     url = "https://en.wikipedia.org/wiki/Special:Random"
-                    print("------------visiting random page------------")
                     index+=1
                     
                     html, title, links = visit(url)
                     for i in links:
                         write("master.txt", "{} {}\n".format(title,i))
                     pages.append(title)
-                    print("{}".format(title.replace("_", " ")))
+                    print("-{}".format(title.replace("_", " ")))
             except:
                 pass
     print("finished")
