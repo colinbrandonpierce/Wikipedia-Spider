@@ -12,12 +12,12 @@ def visit(page):
     title = title.replace(" ", "_")
     paragraphs = html.select("p")
     links = []
-    nono1 = ":"; nono2 = "[update]"
+    nono1 = ":"; nono2 = "[update]"; nono3 = "User Contributions"
     for para in paragraphs:
         linx = para.findAll('a')
         try:
             for i in linx:
-                if (not hasNumbers("{}".format(i))) and ((nono1 or nono2) not in i):
+                if (not hasNumbers("{}".format(i))) and ((nono1 or nono2 or nono3) not in i):
                     i = i.get('title').replace(" ", "_")
                     links.append(i)
         except:
@@ -31,7 +31,7 @@ def write(file, line):
 
 def iterr(pages, start_page, index):
     #TOTAL_PAGES = 6257751
-    MAX_PAGES = 1000000
+    MAX_PAGES = 100000
 
     html, title, links = visit(start_page)
     
@@ -77,7 +77,7 @@ def iterr(pages, start_page, index):
                 pass
     print("finished")
 
-pages = ["Philosophy"] # pages visited
+pages = [] # pages visited
 try:
     fe = open("pages_visited.txt", "r")
     for line in fe:
@@ -86,9 +86,9 @@ try:
     fe.close()
 except:
     pass
-print("visited {} pages total".format(len(pages)))
-index = len(pages);
-iterr(pages, "https://en.wikipedia.org/wiki/Philosophy", index)
+index = len(pages)
+print("visited {} pages total".format(index))
+iterr(pages, "https://en.wikipedia.org/wiki/{}".format(pages[index-1]), index)
 
 
 
