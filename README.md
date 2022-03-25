@@ -1,5 +1,7 @@
 # Wikipedia-Spider
 Wikpedia article title and links scraper. Exports to .txt in a format accepted by Graphia.
 
+Used to explore which articles are most linked to on Wikipedia - Found to be Latin and History after the well known link Philosophy.
+
 Dependancies: bs4, requests
-![allmap](https://user-images.githubusercontent.com/91441949/160133050-2497ac93-46b5-4da7-a8e0-ddff71b6a806.png)
+![result_image](https://github.com/colinbrandonpierce/Wikipedia-Spider/blob/main/allmap.png = 300x300)
